@@ -1,61 +1,34 @@
-
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="h-full">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>n8n Template Gallery</title>
-  <!-- Tailwind 3 CDN with line‑clamp plugin -->
-  <script src="https://cdn.tailwindcss.com?plugins=line-clamp"></script>
-  <script>
-    // tailwind config
-    tailwind.config = {
-      darkMode: 'class',
-      theme: { extend: {} },
-    }
-  </script>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300A8E8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 18l6-6-6-6'/></svg>">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n Template Gallery</title>
+    <!-- Tailwind via CDN (good enough for GitHub Pages) -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 font-sans transition-colors duration-200">
-  <!-- Header -->
-  <header class="sticky top-0 z-20 backdrop-blur bg-white/70 dark:bg-gray-800/70 border-b border-gray-200 dark:border-gray-700">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-      <h1 class="text-xl font-semibold tracking-tight">n8n Template Gallery</h1>
-      <div class="flex items-center gap-4">
-        <input id="search" type="search" placeholder="Search templates…" class="w-48 md:w-72 lg:w-96 p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 placeholder-gray-400 text-sm focus:outline-none">
-        <!-- Theme toggle -->
-        <button id="themeToggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none" aria-label="Toggle theme">
-          <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <!-- Icon will be swapped in script -->
-          </svg>
-        </button>
-      </div>
-    </div>
-  </header>
+<body class="h-full bg-gray-50 text-slate-900 antialiased dark:bg-slate-900 dark:text-slate-100">
+    <header class="sticky top-0 z-10 bg-white/80 backdrop-blur dark:bg-slate-900/80">
+        <div class="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
+            <h1 class="text-lg font-semibold">n8n Template Gallery</h1>
+            <button id="theme-toggle" class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700" title="Toggle dark mode">
+                <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
+                    <path d="M12 3.25a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V4A.75.75 0 0112 3.25zM4 11.25a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H4.75A.75.75 0 014 11.25zm14.75-.75a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5h-1.5zM12 18.25a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM6.22 5.47a.75.75 0 011.06 0l1.06 1.06a.75.75 0 11-1.06 1.06L6.22 6.53a.75.75 0 010-1.06zm9.5 9.5a.75.75 0 011.06 0l1.06 1.06a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm0-9.5l1.06-1.06a.75.75 0 011.06 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06zM7.28 14.97a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0z"/>
+                    <path id="theme-half" d="M12 6.25a5.75 5.75 0 000 11.5 5.75 5.75 0 000-11.5z" />
+                </svg>
+            </button>
+        </div>
+    </header>
 
-  <!-- Main grid -->
-  <main class="max-w-7xl mx-auto p-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="grid"></main>
+    <main class="mx-auto max-w-5xl px-4 py-6 space-y-6">
+        <input id="search" type="text" placeholder="Search templates…" class="w-full rounded-md border border-slate-300 p-3 focus:outline-none focus:ring focus:ring-indigo-300 dark:bg-slate-800 dark:border-slate-600 dark:placeholder-slate-400">
+        <div id="grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+    </main>
 
-  <!-- Empty state -->
-  <template id="emptyTpl">
-    <div class="col-span-full py-20 text-center text-gray-500 dark:text-gray-400">
-      <p class="text-lg">No templates match your search.</p>
-    </div>
-  </template>
-
-  <!-- Card template -->
-  <template id="cardTpl">
-    <article class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transform hover:-translate-y-1 transition overflow-hidden flex flex-col">
-      <div class="p-4 flex-1 flex flex-col">
-        <h2 class="font-medium mb-1 line-clamp-2 text-gray-900 dark:text-gray-50"></h2>
-        <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-3"></p>
-        <p class="mt-auto text-xs text-gray-500 dark:text-gray-400"></p>
-      </div>
-      <a class="block bg-indigo-600 text-white text-center text-sm py-2 hover:bg-indigo-700 focus:outline-none" target="_blank" rel="noopener">Open template</a>
-    </article>
-  </template>
-
-  <!-- JS -->
-  <script type="module" src="js/app.js"></script>
+    <!-- Fuse.js -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
+    <!-- App logic -->
+    <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,2 +1,4 @@
-
-/* Currently no extra styles – Tailwind does the heavy lifting */
+/* Custom tweaks (optional) */
+.card:hover {
+    /* Tailwind classes cover most interactions */
+}

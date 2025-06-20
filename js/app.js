@@ -1,81 +1,70 @@
+// helper for dark/light mode toggle
+(function () {
+    const doc = document.documentElement;
+    const stored = localStorage.getItem('theme');
+    const initial = stored ? stored : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    doc.classList.toggle('dark', initial === 'dark');
+    document.getElementById('theme-icon')?.classList.toggle('rotate-180', initial === 'dark');
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        doc.classList.toggle('dark');
+        const now = doc.classList.contains('dark') ? 'dark' : 'light';
+        localStorage.setItem('theme', now);
+        document.getElementById('theme-icon').classList.toggle('rotate-180', now === 'dark');
+    });
+})();
 
-import Fuse from 'https://cdn.jsdelivr.net/npm/fuse.js@7/dist/fuse.esm.js';
+const grid = document.getElementById('grid');
+const searchInput = document.getElementById('search');
 
-// Theme handling ----------------------------------------------------------------
-const root   = document.documentElement;
-const toggle = document.getElementById('themeToggle');
-const icon   = document.getElementById('themeIcon');
+fetch('assets/templates.json')
+    .then(r => r.json())
+    .then(data => {
+        // initial render
+        render(data);
 
-const moonSVG = '<path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />';
-const sunSVG  = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-7.364l-1.414 1.414M6.05 17.95l-1.414 1.414M18.364 18.364l-1.414-1.414M6.05 6.05L4.636 4.636" />';
+        // search
+        const fuse = new Fuse(data, {
+            keys: ['name', 'title', 'description', 'creator'],
+            threshold: 0.3,
+            ignoreLocation: true,
+        });
 
-function setIcon(isDark){ icon.innerHTML = isDark ? sunSVG : moonSVG; }
+        searchInput.addEventListener('input', (e) => {
+            const q = e.target.value.trim();
+            const results = q ? fuse.search(q).map(res => res.item) : data;
+            render(results);
+        });
+    })
+    .catch(err => {
+        grid.innerHTML = `<p class="text-red-600">Failed to load templates: ${err}</p>`;
+        console.error(err);
+    });
 
-function applyTheme(theme){
-  const isDark = theme === 'dark';
-  root.classList.toggle('dark', isDark);
-  setIcon(isDark);
+function render(list) {
+    grid.innerHTML = '';
+    if (!list.length) {
+        grid.innerHTML = '<p class="col-span-full text-center text-slate-500">No templates found.</p>';
+        return;
+    }
+    const fragment = document.createDocumentFragment();
+    for (const t of list) {
+        fragment.appendChild(card(t));
+    }
+    grid.appendChild(fragment);
 }
 
-// initial
-const stored = localStorage.getItem('theme');
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-applyTheme(stored ?? (prefersDark ? 'dark' : 'light'));
-
-toggle.addEventListener('click', () => {
-  const nowDark = !root.classList.contains('dark');
-  applyTheme(nowDark ? 'dark' : 'light');
-  localStorage.setItem('theme', nowDark ? 'dark' : 'light');
-});
-
-// Gallery logic -----------------------------------------------------------------
-const grid     = document.getElementById('grid');
-const searchEl = document.getElementById('search');
-const cardTpl  = document.getElementById('cardTpl');
-const emptyTpl = document.getElementById('emptyTpl');
-
-let data = [];
-let fuse;
-
-async function loadJSON(){
-  try{
-    const res = await fetch('assets/templates.json');
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    data = await res.json();
-    fuse = new Fuse(data, { keys:['title','description','creator'], threshold:0.35 });
-    render(data);
-  }catch(err){
-    grid.innerHTML = '<p class="col-span-full py-20 text-center text-red-600">Failed to load templates.</p>';
-    console.error(err);
-  }
+function card(t) {
+    const div = document.createElement('div');
+    div.className = 'rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg dark:bg-slate-800 dark:border-slate-700';
+    div.innerHTML = `
+        <div class="p-4 space-y-2">
+            <h2 class="font-medium line-clamp-2">${t.title}</h2>
+            <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-3">${t.description}</p>
+        </div>
+        <div class="p-4 flex items-center justify-between text-sm border-t border-slate-100 dark:border-slate-700">
+            <span class="font-semibold">${t.creator}</span>
+            <a href="${t.youtube_url}" target="_blank" class="text-indigo-600 hover:underline">Demo</a>
+        </div>
+    `;
+    return div;
 }
-
-function templateURL(t){
-  return t.template_url || t.youtube_url || t.resource_url || '#';
-}
-
-function render(list){
-  grid.innerHTML = '';
-  if(list.length === 0){
-    grid.appendChild(emptyTpl.content.cloneNode(true));
-    return;
-  }
-  for(const t of list){
-    const node = cardTpl.content.cloneNode(true);
-    node.querySelector('h2').textContent = t.title || t.name || 'Untitled';
-    node.querySelector('p').textContent  = (t.description || '').trim();
-    const meta = [];
-    if(t.creator) meta.push(t.creator);
-    if(t.date_posted) meta.push(new Date(t.date_posted).toISOString().slice(0,10));
-    node.querySelector('p + p').textContent = meta.join(' • ');
-    node.querySelector('a').href = templateURL(t);
-    grid.appendChild(node);
-  }
-}
-
-searchEl.addEventListener('input', e => {
-  const q = e.target.value.trim();
-  render(q ? fuse.search(q).map(r=>r.item) : data);
-});
-
-loadJSON();
