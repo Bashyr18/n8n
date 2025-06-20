@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>n8n Template Gallery</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <header class="p-4 bg-white shadow">
+    <h1 class="text-2xl font-semibold mb-2">n8n Template Gallery</h1>
+    <input id="search" type="search" placeholder="Search templates…" class="w-full md:w-1/2 p-2 border rounded">
+  </header>
+  <main id="grid" class="p-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></main>
+
+  <template id="card">
+    <article class="card bg-white p-4 rounded shadow hover:shadow-lg transition transform hover:-translate-y-1">
+      <h2 class="title text-lg font-medium mb-1"></h2>
+      <p class="desc text-sm mb-2"></p>
+      <p class="meta text-xs text-gray-500 mb-2"></p>
+      <a class="btn inline-block bg-indigo-600 text-white text-sm px-3 py-1 rounded" target="_blank" rel="noopener">Open</a>
+    </article>
+  </template>
+
+  <script type="module" src="js/script.js"></script>
+</body>
+</html>
