@@ -1,28 +1,61 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>n8n Template Gallery</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-  <link rel="stylesheet" href="css/style.css">
+  <!-- Tailwind 3 CDN with line‑clamp plugin -->
+  <script src="https://cdn.tailwindcss.com?plugins=line-clamp"></script>
+  <script>
+    // tailwind config
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: {} },
+    }
+  </script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300A8E8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 18l6-6-6-6'/></svg>">
 </head>
-<body class="bg-gray-50 text-gray-800">
-  <header class="p-4 bg-white shadow">
-    <h1 class="text-2xl font-semibold mb-2">n8n Template Gallery</h1>
-    <input id="search" type="search" placeholder="Search templates…" class="w-full md:w-1/2 p-2 border rounded">
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 font-sans transition-colors duration-200">
+  <!-- Header -->
+  <header class="sticky top-0 z-20 backdrop-blur bg-white/70 dark:bg-gray-800/70 border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <h1 class="text-xl font-semibold tracking-tight">n8n Template Gallery</h1>
+      <div class="flex items-center gap-4">
+        <input id="search" type="search" placeholder="Search templates…" class="w-48 md:w-72 lg:w-96 p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 placeholder-gray-400 text-sm focus:outline-none">
+        <!-- Theme toggle -->
+        <button id="themeToggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none" aria-label="Toggle theme">
+          <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Icon will be swapped in script -->
+          </svg>
+        </button>
+      </div>
+    </div>
   </header>
-  <main id="grid" class="p-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></main>
 
-  <template id="card">
-    <article class="card bg-white p-4 rounded shadow hover:shadow-lg transition transform hover:-translate-y-1">
-      <h2 class="title text-lg font-medium mb-1"></h2>
-      <p class="desc text-sm mb-2"></p>
-      <p class="meta text-xs text-gray-500 mb-2"></p>
-      <a class="btn inline-block bg-indigo-600 text-white text-sm px-3 py-1 rounded" target="_blank" rel="noopener">Open</a>
+  <!-- Main grid -->
+  <main class="max-w-7xl mx-auto p-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="grid"></main>
+
+  <!-- Empty state -->
+  <template id="emptyTpl">
+    <div class="col-span-full py-20 text-center text-gray-500 dark:text-gray-400">
+      <p class="text-lg">No templates match your search.</p>
+    </div>
+  </template>
+
+  <!-- Card template -->
+  <template id="cardTpl">
+    <article class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transform hover:-translate-y-1 transition overflow-hidden flex flex-col">
+      <div class="p-4 flex-1 flex flex-col">
+        <h2 class="font-medium mb-1 line-clamp-2 text-gray-900 dark:text-gray-50"></h2>
+        <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-3"></p>
+        <p class="mt-auto text-xs text-gray-500 dark:text-gray-400"></p>
+      </div>
+      <a class="block bg-indigo-600 text-white text-center text-sm py-2 hover:bg-indigo-700 focus:outline-none" target="_blank" rel="noopener">Open template</a>
     </article>
   </template>
 
-  <script type="module" src="js/script.js"></script>
+  <!-- JS -->
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
